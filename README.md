@@ -104,7 +104,7 @@ private void OnItemBeginEdit(object sender, Syncfusion.UI.Xaml.TreeView.TreeView
 
 ## Revert the edited changes while pressing Escape key
 
-WinUI TreeView does not have support to rollback the changes when pressing the **ESC** key while editing the TreeView node. But it supports to rollback the changes when an underlying data object implements the [IEditableObject](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.ieditableobject?view=net-6.0) interface.
+WinUI TreeView does not have support to rollback the changes when pressing the **ESC** key while editing the TreeView node. But it supports to rollback the changes when underlying data object implements the [IEditableObject](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.ieditableobject?view=net-6.0) interface.
 
 The user can take a backup of existing data of a node in the [BeginEdit](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.ieditableobject.beginedit?view=net-6.0) method and can change the existing data to the current data in the [CancelEdit](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.ieditableobject.canceledit?view=net-6.0) method to rollback the changes.
 
