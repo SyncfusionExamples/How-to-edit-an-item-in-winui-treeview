@@ -1,4 +1,4 @@
-# How to edit an item in WinUI Treeview?
+# How to edit an item in WinUI Treeview (SfTreeView)?
 
 ## About the sample
 
@@ -12,41 +12,40 @@ It is necessary to define [EditTemplate](https://help.syncfusion.com/cr/winui/Sy
 
 ``` XML
 
-<treeView:SfTreeView   x:Name="treeView"
-                       Width="400"
-                       Height="500"
-                       AllowEditing="True"
-                       AutoExpandMode="AllNodes"
-                       ChildPropertyName="Childs"
-                       BorderBrush="LightGray"
-                       IsAnimationEnabled="True"
-                       BorderThickness="1"
-                       FullRowSelect="True"
-                       ItemsSource="{Binding Nodes1}">
-            <treeView:SfTreeView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <ContentPresenter Width="20"
-                                          Height="20"
-                                          HorizontalAlignment="Stretch"
-                                          VerticalAlignment="Center"
-                                          ContentTemplate="{Binding ImageTemplate}" />
-                        <TextBlock
-                                          Margin="5"
-                                          VerticalAlignment="Center"
-                                          Text="{Binding Header}" />
-                    </StackPanel>
-                </DataTemplate>
-            </treeView:SfTreeView.ItemTemplate>
-            <treeView:SfTreeView.EditTemplate>
-                <DataTemplate>
-                    <TextBox VerticalAlignment="Center" 
-                             Height="{Binding Path=ItemHeight,ElementName=treeView}" 
-                             BorderThickness="1" 
-                             Text="{Binding Header,Mode=TwoWay}"/>
-                </DataTemplate>
-            </treeView:SfTreeView.EditTemplate>
-</treeView:SfTreeView>
+<treeView:SfTreeView x:Name="treeView"
+                     Width="400"
+                     Height="500"
+                     AllowEditing="True"
+                     AutoExpandMode="AllNodes"
+                     ChildPropertyName="Childs"
+                     BorderBrush="LightGray"
+                     IsAnimationEnabled="True"
+                     BorderThickness="1"
+                     FullRowSelect="True"
+                     ItemsSource="{Binding Nodes1}">
+     <treeView:SfTreeView.ItemTemplate>
+         <DataTemplate>
+             <StackPanel Orientation="Horizontal">
+                 <ContentPresenter Width="20"
+                                   Height="20"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   ContentTemplate="{Binding ImageTemplate}" />
+                 <TextBlock Margin="5"
+                            VerticalAlignment="Center"
+                            Text="{Binding Header}" />
+             </StackPanel>
+         </DataTemplate>
+     </treeView:SfTreeView.ItemTemplate>
+     <treeView:SfTreeView.EditTemplate>
+         <DataTemplate>
+             <TextBox VerticalAlignment="Center" 
+                      Height="{Binding Path=ItemHeight,ElementName=treeView}" 
+                      BorderThickness="1" 
+                      Text="{Binding Header,Mode=TwoWay}"/>
+         </DataTemplate>
+     </treeView:SfTreeView.EditTemplate>
+ </treeView:SfTreeView>
 
 ```
 
@@ -111,119 +110,118 @@ The user can take a backup of existing data of a node in the [BeginEdit](https:/
 The below code snippet explains the simple implementation of IEditableObject interface to rollback the changes.
 
 ``` C#
-
 public class EditingModel : INotifyPropertyChanged, IEditableObject
 {
-        #region Fields
+    #region Fields
 
-        private string name;
-        internal EditingModel backUpData;
-        private EditingModel currentData;
+    private string name;
+    internal EditingModel backUpData;
+    private EditingModel currentData;
 
-        private string header = string.Empty;
-        private bool isexpanded = true;
-        private DataTemplate imageTemplate;
-        private ObservableCollection<EditingModel> childs = null;
+    private string header = string.Empty;
+    private bool isexpanded = true;
+    private DataTemplate imageTemplate;
+    private ObservableCollection<EditingModel> childs = null;
 
-        #endregion
+    #endregion
 
-        #region Constructor
+    #region Constructor
 
-        public EditingModel()
+    public EditingModel()
+    {
+
+    }
+
+    public EditingModel(string name) : base()
+    {
+        Childs = new ObservableCollection<EditingModel>();
+        this.currentData = new EditingModel();
+        this.currentData.name = name;
+    }
+
+    #endregion
+
+    #region Properties
+    public string Header
+    {
+        get
         {
-            
+            return currentData.name;
         }
-
-        public EditingModel(string name):base()
+        set
         {
-            Childs = new ObservableCollection<EditingModel>();
-            this.currentData = new EditingModel();
-            this.currentData.name = name;
+            currentData.name = value;
+            this.RaisePropertyChanged("Header");
         }
+    }
 
-        #endregion
-
-        #region Properties
-        public string Header
+    public bool IsExpanded
+    {
+        get
         {
-            get
-            {
-                return currentData.name;
-            }
-            set
-            {
-                currentData.name = value;
-                this.RaisePropertyChanged("Header");
-            }
+            return isexpanded;
         }
-
-        public bool IsExpanded
+        set
         {
-            get
-            {
-                return isexpanded;
-            }
-            set
-            {
-                isexpanded = value;
-                this.RaisePropertyChanged("IsExpanded");
-            }
+            isexpanded = value;
+            this.RaisePropertyChanged("IsExpanded");
         }
-        
-        public DataTemplate ImageTemplate
+    }
+
+    public DataTemplate ImageTemplate
+    {
+        get { return imageTemplate; }
+        set { imageTemplate = value; }
+    }
+
+    public ObservableCollection<EditingModel> Childs
+    {
+        get
         {
-            get { return imageTemplate; }
-            set { imageTemplate = value; }
+            return childs;
         }
-
-        public ObservableCollection<EditingModel> Childs
+        set
         {
-            get
-            {
-                return childs;
-            }
-            set
-            {
-                childs = value;
-                this.RaisePropertyChanged("Childs");
-            }
+            childs = value;
+            this.RaisePropertyChanged("Childs");
         }
+    }
 
-        #endregion
+    #endregion
 
-        #region INotifyPropertyChanged
+    #region INotifyPropertyChanged
 
-        public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler PropertyChanged;
 
-        public void RaisePropertyChanged(string _PropertyName)
+    public void RaisePropertyChanged(string _PropertyName)
+    {
+        if (PropertyChanged != null)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(_PropertyName));
-            }
+            PropertyChanged(this, new PropertyChangedEventArgs(_PropertyName));
         }
+    }
 
-        #endregion
+    #endregion
 
-        #region IEditableObject
+    #region IEditableObject
 
-        public void BeginEdit()
-        {
-            backUpData = new EditingModel();
-            backUpData.name = this.currentData.name;
-        }
-        
-        public void EndEdit()
-        {
-            
-        }
+    public void BeginEdit()
+    {
+        backUpData = new EditingModel();
+        backUpData.name = this.currentData.name;
+    }
 
-        public void CancelEdit()
-        {
-            this.currentData = backUpData;
-        }
-        
-        #endregion
+    public void EndEdit()
+    {
+
+    }
+
+    public void CancelEdit()
+    {
+        this.currentData = backUpData;
+    }
+
+    #endregion
 }
 
 ```
